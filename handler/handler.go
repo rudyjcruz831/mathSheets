@@ -43,8 +43,11 @@ func NewHandler(c *Config) {
 	// }
 
 	g.GET("/", h.Home)
+	g.GET("/user/info")
 }
 
 func (h *Handler) Home(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]string{"Name": "Home"})
 }
+
+// func (h *Handler) user_info()

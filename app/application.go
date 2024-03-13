@@ -17,14 +17,14 @@ func StartApp() {
 
 	// initialze data source
 	// TODO: connect DB like for example S3 buckest to store mathsheets created before and may be answers
-	// ds, err := initDS()
-	// if err != nil {
-	// 	log.Fatalf("Error intilizing data source: %v\n", err)
-	// }
+	ds, err := initDS()
+	if err != nil {
+		log.Fatalf("Error intilizing data source: %v\n", err)
+	}
 
 	//injection other services and add any env variables
 
-	router, err := inject() // remove ds for now becuse we don't have no db for now [router, err := inject(ds)]
+	router, err := inject(ds) // remove ds for now becuse we don't have no db for now [router, err := inject(ds)]
 	if err != nil {
 		log.Fatalf("Failure to inject data source: %v\n", err)
 	}

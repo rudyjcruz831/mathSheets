@@ -9,9 +9,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rudyjcruz831/mathSheets/handler"
+	"github.com/rudyjcruz831/mathSheets/repository"
+	"github.com/rudyjcruz831/mathSheets/services"
 )
 
-func inject() (*gin.Engine, error) {
+func inject(d *dataSources) (*gin.Engine, error) {
 	log.Println("Injecting data source...")
 
 	/*
@@ -19,17 +21,16 @@ func inject() (*gin.Engine, error) {
 	*/
 	// TODO : add this when creating the AWS s3 bucket to store worksheets created history
 	// workSheetBucketName := os.Getenv("AWS_FILE_BUCKET")
-	// userRepository := repository.NewUserRepository(d.DB)
+	userRepository := repository.NewUserRepository(d.DB)
 	// imageRepository := repository.NewWorkSheetRepository(d.StorageClient, workSheetBucketName)
 
 	/*
 		Service Layer
 	*/
 
-	// userServcie := services.NewUserService(&services.USConfig{
-	// 	UserRepository:      userRepository,
-	// 	WorkSheetRepository: workSheetRepository,
-	// })
+	userServcie := services.NewUserService(&services.USConfig{
+		UserRepository: userRepository,
+	})
 
 	// initialize gin.Engine
 	router := gin.Default()
@@ -46,6 +47,7 @@ func inject() (*gin.Engine, error) {
 	handler.NewHandler(&handler.Config{
 		R:                router,
 		BaseURL:          baseURL,
+		UserSevice:       userServcie,
 		TimeoutDurations: time.Duration(time.Duration(ht) * time.Second),
 		MaxBodyBytes:     1024 * 1024 * 1024,
 	})
