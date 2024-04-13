@@ -11,12 +11,14 @@ import (
 
 type Handler struct {
 	UserService  model.UserService
+	TokenService model.TokenService
 	MaxBodyBytes int64
 }
 
 type Config struct {
 	R                *gin.Engine
 	UserSevice       model.UserService
+	TokenService     model.TokenService
 	BaseURL          string
 	TimeoutDurations time.Duration
 	MaxBodyBytes     int64
@@ -24,7 +26,8 @@ type Config struct {
 
 func NewHandler(c *Config) {
 	h := &Handler{
-		UserService: c.UserSevice,
+		UserService:  c.UserSevice,
+		TokenService: c.TokenService,
 	}
 
 	c.R.Use(cors.New(cors.Config{
@@ -44,6 +47,8 @@ func NewHandler(c *Config) {
 
 	g.GET("/", h.Home)
 	g.GET("/user/info")
+	g.POST("/user/signup", h.Signup)
+	g.POST("/user/signin", h.SignIn)
 }
 
 func (h *Handler) Home(c *gin.Context) {

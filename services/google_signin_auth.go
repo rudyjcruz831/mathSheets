@@ -14,20 +14,20 @@ import (
 )
 
 func auth(code string) (*model.Response, *model.Users, *errors.MathSheetsError) {
-	tok, tradeCVDErr := getTokenFromAuthCode(code)
-	if tradeCVDErr != nil {
-		return nil, nil, tradeCVDErr
+	tok, mathSheetErr := getTokenFromAuthCode(code)
+	if mathSheetErr != nil {
+		return nil, nil, mathSheetErr
 	}
 
-	tokenID, tradeCVDErr := getUserInfoFromToken(tok)
-	if tradeCVDErr != nil {
-		return nil, nil, tradeCVDErr
+	tokenID, mathSheetErr := getUserInfoFromToken(tok)
+	if mathSheetErr != nil {
+		return nil, nil, mathSheetErr
 	}
 
 	var tokID model.TokenID
 	if err := json.Unmarshal(tokenID, &tokID); err != nil {
-		tradeCVDErr := errors.NewInternalServerError("not able to parse token")
-		return nil, nil, tradeCVDErr
+		mathSheetErr := errors.NewInternalServerError("not able to parse token")
+		return nil, nil, mathSheetErr
 	}
 
 	u := model.Users{
@@ -81,8 +81,8 @@ func getTokenFromAuthCode(authCode string) (*oauth2.Token, *errors.MathSheetsErr
 	// Exchange consumable authorization code for refresh token
 	tok, err := conf.Exchange(context.Background(), authCode)
 	if err != nil {
-		tradeCVDErr := errors.UnauthorizedError("getting token form authCode ---" + err.Error())
-		return nil, tradeCVDErr
+		mathSheetErr := errors.UnauthorizedError("getting token form authCode ---" + err.Error())
+		return nil, mathSheetErr
 	}
 
 	return tok, nil
@@ -94,14 +94,14 @@ func getUserInfoFromToken(token *oauth2.Token) ([]byte, *errors.MathSheetsError)
 	client := conf.Client(oauth2.NoContext, token)
 	resp, err := client.Get("https://www.googleapis.com/oauth2/v3/userinfo")
 	if err != nil {
-		tradeCVDErr := errors.UnauthorizedError("getting user from token ---" + err.Error())
-		return nil, tradeCVDErr
+		mathSheetErr := errors.UnauthorizedError("getting user from token ---" + err.Error())
+		return nil, mathSheetErr
 	}
 	defer resp.Body.Close()
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		tradeCVDErr := errors.NewInternalServerError("Something went wrong on our end")
-		return nil, tradeCVDErr
+		mathSheetErr := errors.NewInternalServerError("Something went wrong on our end")
+		return nil, mathSheetErr
 	}
 
 	return data, nil

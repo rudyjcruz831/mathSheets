@@ -31,8 +31,8 @@ func (r *pGUserRepository) FindByID(ctx context.Context, id string) (*model.User
 
 	result := r.DB.First(&u, id)
 	if result.Error != nil {
-		tradeCVDErr := errors.NewNotFound("id", id)
-		return nil, tradeCVDErr
+		mathSheetErr := errors.NewNotFound("id", id)
+		return nil, mathSheetErr
 	}
 
 	return u, nil
@@ -48,8 +48,8 @@ func (r *pGUserRepository) Create(ctx context.Context, u *model.Users) *errors.M
 	u.ID = uid.String()
 	if result := r.DB.FirstOrCreate(&u, u); result.Error != nil {
 		log.Printf("Could not create a user with email: %v. Reason: %v\n", u.Email, result.Error)
-		tradeCVDErr := errors.NewConflict("email", u.Email)
-		return tradeCVDErr
+		mathSheetErr := errors.NewConflict("email", u.Email)
+		return mathSheetErr
 	}
 
 	return nil
@@ -65,11 +65,11 @@ func (r *pGUserRepository) FindByEmail(ctx context.Context, email string) (*mode
 	if result := r.DB.Where("email = ?", email).First(u); result.Error != nil {
 		log.Printf("Db error : %v", result.Error)
 		if result.Error == gorm.ErrRecordNotFound {
-			tradeCVDErr := errors.NewNotFound("email", email)
-			return nil, tradeCVDErr
+			mathSheetErr := errors.NewNotFound("email", email)
+			return nil, mathSheetErr
 		} else {
-			tradeCVDErr := errors.NewInternalServerError("")
-			return nil, tradeCVDErr
+			mathSheetErr := errors.NewInternalServerError("")
+			return nil, mathSheetErr
 		}
 
 	}
@@ -83,8 +83,8 @@ func (r *pGUserRepository) Update(ctx context.Context, u *model.Users) *errors.M
 	result := r.DB.Where("email = ?", u.Email).First(userInRepo)
 	if result.Error != nil {
 		log.Printf("Db error: %v", result.Error)
-		tradeCVDErr := errors.NewNotFound("email", u.Email)
-		return tradeCVDErr
+		mathSheetErr := errors.NewNotFound("email", u.Email)
+		return mathSheetErr
 	}
 
 	userInRepo.FirstName = u.FirstName
@@ -93,8 +93,8 @@ func (r *pGUserRepository) Update(ctx context.Context, u *model.Users) *errors.M
 	result = r.DB.Save(userInRepo)
 	if result.Error != nil {
 		log.Printf("Db error %v", result.Error)
-		tradeCVDErr := errors.NewInternalServerError("")
-		return tradeCVDErr
+		mathSheetErr := errors.NewInternalServerError("")
+		return mathSheetErr
 	}
 
 	return nil
@@ -111,24 +111,24 @@ func (r *pGUserRepository) Delete(ctx context.Context, id string) *errors.MathSh
 	return nil
 }
 
-func (r *pGUserRepository) UpdateImage(ctx context.Context, u *model.Users, imageURL string) (*model.Users, *errors.MathSheetsError) {
+// func (r *pGUserRepository) UpdateImage(ctx context.Context, u *model.Users, imageURL string) (*model.Users, *errors.MathSheetsError) {
 
-	// must be instantiated to scan into ref using `GetContext`
-	userInRepo := &model.Users{}
+// 	// must be instantiated to scan into ref using `GetContext`
+// 	userInRepo := &model.Users{}
 
-	result := r.DB.Where("email = ?", u.Email).First(userInRepo)
-	if result.Error != nil {
-		log.Printf("Db error: %v", result.Error)
-		tradeCVDErr := errors.NewNotFound("email", u.Email)
-		return nil, tradeCVDErr
-	}
-	//update the user Image
-	userInRepo.Image = imageURL
-	result = r.DB.Save(userInRepo)
-	if result.Error != nil {
-		log.Printf("Db error %v", result.Error)
-		tradeCVDErr := errors.NewInternalServerError("")
-		return nil, tradeCVDErr
-	}
-	return userInRepo, nil
-}
+// 	result := r.DB.Where("email = ?", u.Email).First(userInRepo)
+// 	if result.Error != nil {
+// 		log.Printf("Db error: %v", result.Error)
+// 		mathSheetErr := errors.NewNotFound("email", u.Email)
+// 		return nil, mathSheetErr
+// 	}
+// 	//update the user Image
+// 	userInRepo.Image = imageURL
+// 	result = r.DB.Save(userInRepo)
+// 	if result.Error != nil {
+// 		log.Printf("Db error %v", result.Error)
+// 		mathSheetErr := errors.NewInternalServerError("")
+// 		return nil, mathSheetErr
+// 	}
+// 	return userInRepo, nil
+// }

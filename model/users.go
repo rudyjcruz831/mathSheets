@@ -6,14 +6,14 @@ import "time"
 type Users struct {
 	ID        string     `json:"user_id" gorm:"column:user_id;primary_key"`
 	Email     string     `json:"email" binding:"required,email" gorm:"column:email;unique;not null"`
+	Username  string     `json:"username" binding:"required" gorm:"column:username;unique;not null"`
 	Password  string     `json:"-" binding:"required,gte=6,lte=30" gorm:"column:password"`
 	FirstName string     `json:"first_name" gorm:"column:first_name"`
 	LastName  string     `json:"last_name" gorm:"column:last_name"`
-	Image     string     `json:"image" gorm:"column:image"`
-	Role      string     `json:"role" gorm:"column:role"`
-	CreatedOn time.Time  `json:"created_on" gorm:"column:created_on"`
-	UpdatedAt time.Time  `json:"updated_at" gorm:"column:updated_at"`
-	DeletedAt *time.Time `json:"deleted_at" gorm:"column:deleted_at"`
+	Role      string     `json:"-" gorm:"column:user_role"`
+	CreatedOn time.Time  `json:"-" gorm:"column:created_on"`
+	UpdatedAt time.Time  `json:"-" gorm:"column:updated_at"`
+	DeletedAt *time.Time `json:"-" gorm:"column:deleted_at"`
 }
 
 // Token Response ...

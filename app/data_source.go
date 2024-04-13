@@ -1,18 +1,20 @@
 package app
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
 	"os"
 
+	"github.com/go-redis/redis/v8"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 type dataSources struct {
-	DB *gorm.DB
-	//RedisClient *redis.Client
+	DB          *gorm.DB
+	RedisClient *redis.Client
 	//StorageClient *storage.Client
 
 	sqlDB *sql.DB
@@ -53,14 +55,37 @@ func initDS() (*dataSources, error) {
 		return nil, err
 	}
 
+	// Initialized redis connection //
+	redisHost := os.Getenv("REDIS_HOST")
+	redisPort := os.Getenv("REDIS_PORT")
+
+	log.Println("Connecting to Redis")
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     fmt.Sprintf("%s:%s", redisHost, redisPort),
+		Password: "",
+		DB:       0,
+	})
+
+	// verify redis connections
+	_, err = rdb.Ping(context.Background()).Result()
+	if err != nil {
+		return nil, fmt.Errorf("error connecting to redis: %v", err)
+	}
+
 	// fmt.Print("database successfully configured\n")
-	return &dataSources{DB: db, sqlDB: sqlDB}, nil
+	return &dataSources{DB: db, sqlDB: sqlDB, RedisClient: rdb}, nil
 
 }
 
 func (d *dataSources) Close() error {
+	//close postgresDB
 	if err := d.sqlDB.Close(); err != nil {
 		return fmt.Errorf("error closing Postgresql: %w", err)
+	}
+
+	//close redisDB
+	if err := d.RedisClient.Close(); err != nil {
+		return fmt.Errorf("error closing Redis: %w", err)
 	}
 
 	return nil

@@ -2,6 +2,7 @@ package model
 
 import (
 	"context"
+	"time"
 
 	"github.com/rudyjcruz831/mathSheets/util/errors"
 )
@@ -12,7 +13,7 @@ type UserService interface {
 	Signup(ctx context.Context, u *Users) *errors.MathSheetsError
 	Signin(ctx context.Context, u *Users) (*Users, *errors.MathSheetsError)
 	// UpdateDetails(ctx context.Context, u *Users) *errors.MathSheetsError
-	// DeleteUser(ctx context.Context, id string) *errors.MathSheetsError
+	DeleteUser(ctx context.Context, id string) *errors.MathSheetsError
 	// GoogleSignin(ctx context.Context, code string) (*Users, *errors.MathSheetsError)
 }
 
@@ -22,5 +23,23 @@ type UserRepository interface {
 	FindByEmail(ctx context.Context, email string) (*Users, *errors.MathSheetsError)
 	Update(ctx context.Context, u *Users) *errors.MathSheetsError
 	Delete(ctx context.Context, id string) *errors.MathSheetsError
-	UpdateImage(ctx context.Context, u *Users, imageURL string) (*Users, *errors.MathSheetsError)
+	// UpdateImage(ctx context.Context, u *Users, imageURL string) (*Users, *errors.MathSheetsError)
+}
+
+// TokenService defines methods handler layer expects to interact
+// with in regards to producing JWT as string
+type TokenService interface {
+	NewPairForUser(ctx context.Context, u *Users, prevTokenID string) (*TokenPair, *errors.MathSheetsError)
+	Signout(ctx context.Context, uid string, tokenString string) *errors.MathSheetsError
+	ValidateIDToken(tokenString string) (*Users, string, *errors.MathSheetsError)
+	ValidateRefreshToken(refreshTokenString string) (*RefreshToken, *errors.MathSheetsError)
+	IsBlackedListed(ctx context.Context, uid string, tokenid string) *errors.MathSheetsError
+}
+
+type TokenRepository interface {
+	SetRefreshToken(ctx context.Context, userID string, tokenID string, expiresIn time.Duration) *errors.MathSheetsError
+	DeleteRefreshToken(ctx context.Context, userID string, prevTokenID string) *errors.MathSheetsError
+	DeleteUserRefreshTokens(ctx context.Context, userID string) *errors.MathSheetsError
+	TokenBlackedListed(ctx context.Context, userID string, tokenID string, expiresIn time.Duration) *errors.MathSheetsError
+	HaveToken(ctx context.Context, userID string, tokenID string) bool
 }

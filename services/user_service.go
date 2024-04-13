@@ -109,8 +109,8 @@ func (s *userService) UpdateDetails(ctx context.Context, u *model.Users) *errors
 
 func (s *userService) DeleteUser(ctx context.Context, id string) *errors.MathSheetsError {
 	// panic("Delete user service")
-	tradeCVD := s.UserRepository.Delete(ctx, id)
-	return tradeCVD
+	mathSheetsErr := s.UserRepository.Delete(ctx, id)
+	return mathSheetsErr
 }
 
 // Using google to sign in user if no user will be created calling the repo
