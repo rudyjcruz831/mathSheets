@@ -7,3 +7,8 @@ Introduction:
 	$ docker exec -it contianerID /bin/sh  
 2. Second enter command to go into DB with user:user and password: password 
 	$ psql -h 0.0.0.0 -p 5432 -d post_database -U user_post --password
+
+
+## models
+
+this one is one of the best open AI models:  "text-davinci-002" 

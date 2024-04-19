@@ -11,9 +11,11 @@ import (
 // signupReq is not exported, hence the lowercase name
 // it is used for validation and json marshalling
 type signupReq struct {
-	Email    string `json:"email" binding:"required,email"`
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required,gte=6,lte=30"`
+	Email     string `json:"email" binding:"required,email"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Username  string `json:"username" binding:"required"`
+	Password  string `json:"password" binding:"required,gte=6,lte=30"`
 }
 
 // Signup handler
@@ -30,9 +32,11 @@ func (h *Handler) Signup(c *gin.Context) {
 
 	// inject user request to user to use for User service layer
 	u := &model.Users{
-		Email:    req.Email,
-		Username: req.Username,
-		Password: req.Password,
+		Email:     req.Email,
+		Username:  req.Username,
+		FirstName: req.FirstName,
+		LastName:  req.LastName,
+		Password:  req.Password,
 	}
 
 	ctx := c.Request.Context()

@@ -14,7 +14,8 @@ type UserService interface {
 	Signin(ctx context.Context, u *Users) (*Users, *errors.MathSheetsError)
 	// UpdateDetails(ctx context.Context, u *Users) *errors.MathSheetsError
 	DeleteUser(ctx context.Context, id string) *errors.MathSheetsError
-	// GoogleSignin(ctx context.Context, code string) (*Users, *errors.MathSheetsError)
+	GoogleSignin(ctx context.Context, code string) (*Users, *errors.MathSheetsError)
+	CreatePDF(ctx context.Context, grade string, subject string) *errors.MathSheetsError
 }
 
 type UserRepository interface {

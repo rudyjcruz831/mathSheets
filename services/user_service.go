@@ -139,6 +139,11 @@ func (s *userService) GoogleSignin(ctx context.Context, code string) (*model.Use
 	return uFetched, nil
 }
 
+func (s *userService) CreatePDF(ctx context.Context, grade string, subject string) *errors.MathSheetsError {
+	// here we are going to try to qurey OpenAI API
+	panic("CreatedPDF")
+}
+
 // func (s *userService) SetProfileImage(ctx context.Context, id string, imageFileHeader *multipart.FileHeader) (*model.Users, *errors.MathSheetsError) {
 // 	// TODO - testing for this service also I will need to come in here and make sure if I am even adding an image to user
 // 	u, err := s.UserRepository.FindByID(ctx, id)
