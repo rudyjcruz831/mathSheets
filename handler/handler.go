@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/rudyjcruz831/mathSheets/handler/middleware"
 	"github.com/rudyjcruz831/mathSheets/model"
 )
 
@@ -19,7 +20,7 @@ type Handler struct {
 // Config holds the configuration parameters for the Handler.
 type Config struct {
 	R                *gin.Engine
-	UserSevice       model.UserService
+	UserService      model.UserService
 	TokenService     model.TokenService
 	BaseURL          string
 	TimeoutDurations time.Duration
@@ -29,20 +30,20 @@ type Config struct {
 // NewHandler creates a new instance of the Handler with the provided configuration.
 func NewHandler(c *Config) {
 	h := &Handler{
-		UserService:  c.UserSevice,
+		UserService:  c.UserService,
 		TokenService: c.TokenService,
 	}
 
 	// Enable CORS middleware with the provided configuration.
 	c.R.Use(cors.New(cors.Config{
 		AllowOrigins: []string{"*"},
-		AllowMethods: []string{"POST"},
-		AllowHeaders: []string{"Content-type"},
+		AllowMethods: []string{"POST, GET"},
+		AllowHeaders: []string{"Content-type, Authorization"},
 	}))
 
 	g := c.R.Group(c.BaseURL) // Create a new route group under the base URL.
 
-	// this is use to run test for CI and run code normaly on server
+	// this is use to run test for CI and run code normaly on local machine
 	// if gin.Mode() != gin.TestMode {
 
 	// } else {
@@ -50,10 +51,12 @@ func NewHandler(c *Config) {
 	// }
 
 	// Define routes and their corresponding handler functions.
-	g.GET("/", h.Home)               // Home route
-	g.GET("/user/info")              // User info route (not implemented)
+	g.GET("/", h.Home) // Home route
+	g.GET("/user/signout", middleware.AuthUser(h.TokenService, h.UserService), h.SignOut)
+	g.GET("/user/info", middleware.AuthUser(h.TokenService, h.UserService), h.UserInfo)
 	g.POST("/user/signup", h.Signup) // User signup route
 	g.POST("/user/signin", h.SignIn) // User signin route
+	g.POST("/user/tokens", h.Tokens)
 }
 
 func (h *Handler) Home(c *gin.Context) {

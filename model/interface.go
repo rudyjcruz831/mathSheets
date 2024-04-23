@@ -31,16 +31,17 @@ type UserRepository interface {
 // with in regards to producing JWT as string
 type TokenService interface {
 	NewPairForUser(ctx context.Context, u *Users, prevTokenID string) (*TokenPair, *errors.MathSheetsError)
-	Signout(ctx context.Context, uid string, tokenString string) *errors.MathSheetsError
+	Signout(ctx context.Context, uid string) *errors.MathSheetsError
 	ValidateIDToken(tokenString string) (*Users, string, *errors.MathSheetsError)
 	ValidateRefreshToken(refreshTokenString string) (*RefreshToken, *errors.MathSheetsError)
-	IsBlackedListed(ctx context.Context, uid string, tokenid string) *errors.MathSheetsError
+	HaveToken(ctx context.Context, userID string, tokenID string) *errors.MathSheetsError
+	// IsBlackedListed(ctx context.Context, uid string, tokenid string) *errors.MathSheetsError
 }
 
 type TokenRepository interface {
 	SetRefreshToken(ctx context.Context, userID string, tokenID string, expiresIn time.Duration) *errors.MathSheetsError
 	DeleteRefreshToken(ctx context.Context, userID string, prevTokenID string) *errors.MathSheetsError
 	DeleteUserRefreshTokens(ctx context.Context, userID string) *errors.MathSheetsError
-	TokenBlackedListed(ctx context.Context, userID string, tokenID string, expiresIn time.Duration) *errors.MathSheetsError
+	// TokenBlackedListed(ctx context.Context, userID string, tokenID string, expiresIn time.Duration) *errors.MathSheetsError
 	HaveToken(ctx context.Context, userID string, tokenID string) bool
 }

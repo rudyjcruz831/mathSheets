@@ -104,7 +104,7 @@ func inject(d *dataSources) (*gin.Engine, error) {
 	handler.NewHandler(&handler.Config{
 		R:                router,
 		BaseURL:          baseURL,
-		UserSevice:       userServcie,
+		UserService:      userServcie,
 		TokenService:     tokenService,
 		TimeoutDurations: time.Duration(time.Duration(ht) * time.Second),
 		MaxBodyBytes:     1024 * 1024 * 1024,

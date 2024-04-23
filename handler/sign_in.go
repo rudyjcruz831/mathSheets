@@ -39,11 +39,10 @@ func (h *Handler) SignIn(c *gin.Context) {
 		return
 	}
 
-	tokens, mathSheetErr := h.TokenService.NewPairForUser(ctx, uNew, "")
-
-	if mathSheetErr != nil {
+	tokens, mathErr := h.TokenService.NewPairForUser(ctx, uNew, "")
+	if mathErr != nil {
 		log.Printf("Failed to create tokens for user: %v\n", mathSheetErr)
-		c.JSON(mathSheetErr.Status, mathSheetErr)
+		c.JSON(mathErr.Status, mathErr)
 		return
 	}
 

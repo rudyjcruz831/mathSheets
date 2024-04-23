@@ -12,16 +12,15 @@ func (h *Handler) SignOut(c *gin.Context) {
 	// here I am using a user and tokenstring from the middleware
 	// this is not correct
 	// TODO: make sure that i am getting the user becasue as how it is now it will not work
-	user := c.MustGet("user")
-	tokenString := c.MustGet("token")
+	// I have check this in middleware/auth_user.go
+	user := c.MustGet("user").(*model.Users)
 
 	ctx := c.Request.Context()
-	if mathSheetsErr := h.TokenService.Signout(ctx, user.(*model.Users).ID, tokenString.(string)); mathSheetsErr != nil {
+	if mathSheetsErr := h.TokenService.Signout(ctx, user.ID); mathSheetsErr != nil {
 		c.JSON(mathSheetsErr.Status, mathSheetsErr)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "user signed out successfully!",
-	})
+	// Respond with success message or redirect to home page
+	c.JSON(http.StatusOK, gin.H{"message": "Successfully signed out"})
 }

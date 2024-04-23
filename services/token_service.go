@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/rsa"
 	"log"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/rudyjcruz831/mathSheets/model"
@@ -93,21 +92,11 @@ func (s *tokenService) NewPairForUser(ctx context.Context, u *model.Users, prevT
 
 // Signout reaches out to the repository layer to delete all valid tokens for a user
 // TODO: test if correctly return id of idToken to use in blacklist add testing to token layer for BlackedListed
-func (s *tokenService) Signout(ctx context.Context, uid string, tokenString string) *errors.MathSheetsError {
+func (s *tokenService) Signout(ctx context.Context, uid string) *errors.MathSheetsError {
 	if mathSheetErr := s.TokenRepository.DeleteUserRefreshTokens(ctx, uid); mathSheetErr != nil {
 		return mathSheetErr
 	}
-	claims, err := validateIDToken(tokenString, s.PubKey)
-	if err != nil {
-		log.Printf("validate ID token in signOut error: %v", err)
-		return errors.NewInternalServerError("id token not valid")
-	}
-
-	issuedAt := time.Unix(claims.IssuedAt, 0)
-	expiresIn := time.Unix(claims.ExpiresAt, 0)
-	expIn := expiresIn.Sub(issuedAt)
-
-	return s.TokenRepository.TokenBlackedListed(ctx, claims.User.ID, claims.Id, expIn)
+	return nil
 }
 
 // ValidateIDToken validates the id token jwt string
@@ -152,10 +141,18 @@ func (s *tokenService) ValidateRefreshToken(tokenString string) (*model.RefreshT
 	}, nil
 }
 
-// IsBlackedListed checks if token has been blacked listed
-func (s *tokenService) IsBlackedListed(ctx context.Context, uid string, tokenid string) *errors.MathSheetsError {
-	if s.TokenRepository.HaveToken(ctx, uid, tokenid) {
+func (s *tokenService) HaveToken(ctx context.Context, userid string, tokenid string) *errors.MathSheetsError {
+	// TODO: make sure this is correct
+	if !s.TokenRepository.HaveToken(ctx, userid, tokenid) {
 		return errors.NewAuthorization("Provided token is invalid")
 	}
 	return nil
 }
+
+// IsBlackedListed checks if token has been blacked listed
+// func (s *tokenService) IsBlackedListed(ctx context.Context, uid string, tokenid string) *errors.MathSheetsError {
+// 	if s.TokenRepository.HaveToken(ctx, uid, tokenid) {
+// 		return errors.NewAuthorization("Provided token is invalid")
+// 	}
+// 	return nil
+// }

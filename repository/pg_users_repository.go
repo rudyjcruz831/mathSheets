@@ -27,10 +27,13 @@ func NewUserRepository(db *gorm.DB) model.UserRepository {
 // FindByID fetches user by id
 func (r *pGUserRepository) FindByID(ctx context.Context, id string) (*model.Users, *errors.MathSheetsError) {
 	// panic("Create function in Pg user repository")
-	u := &model.Users{}
-
-	result := r.DB.First(&u, id)
+	// we storing ID into model this allows GORM to use the PRIMARY KEY in model
+	u := &model.Users{
+		ID: id,
+	}
+	result := r.DB.First(&u)
 	if result.Error != nil {
+		log.Printf("Error: %v\n", result.Error)
 		mathSheetErr := errors.NewNotFound("id", id)
 		return nil, mathSheetErr
 	}

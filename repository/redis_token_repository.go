@@ -53,7 +53,7 @@ func (r *redisTokenRepository) DeleteRefreshToken(ctx context.Context, userID st
 	// Val returns count of deleted keys
 	// If no value was deleted, the refresh token is invalid
 	if result.Val() < 1 {
-		log.Printf("Refresh token to redis for userID: %s/%s does not exist\n", userID, tokenID)
+		log.Printf("Refresh token to redis for userID: %s:%s does not exist\n", userID, tokenID)
 		return errors.NewAuthorization("Invalid refresh token")
 	}
 
@@ -88,17 +88,17 @@ func (r *redisTokenRepository) DeleteUserRefreshTokens(ctx context.Context, user
 }
 
 // TokenBlackedListed add tokens to redis to when signed out
-func (r *redisTokenRepository) TokenBlackedListed(ctx context.Context, userID string, tokenID string, expiresIn time.Duration) *errors.MathSheetsError {
-	// panic("")
-	// We'll store userID with token id so we can scan (non-blocking)
-	// over the user's tokens and delete them in case of token leakage
-	key := fmt.Sprintf("%s:%s", userID, tokenID)
-	if err := r.Redis.Set(ctx, key, 1, expiresIn).Err(); err != nil {
-		log.Printf("Could not SET refresh token to redis for userID/tokenID: %s/%s: %v\n", userID, tokenID, err)
-		return errors.NewInternalServerError("")
-	}
-	return nil
-}
+// func (r *redisTokenRepository) TokenBlackedListed(ctx context.Context, userID string, tokenID string, expiresIn time.Duration) *errors.MathSheetsError {
+// 	// panic("")
+// 	// We'll store userID with token id so we can scan (non-blocking)
+// 	// over the user's tokens and delete them in case of token leakage
+// 	key := fmt.Sprintf("%s:%s", userID, tokenID)
+// 	if err := r.Redis.Set(ctx, key, 1, expiresIn).Err(); err != nil {
+// 		log.Printf("Could not SET refresh token to redis for userID/tokenID: %s/%s: %v\n", userID, tokenID, err)
+// 		return errors.NewInternalServerError("")
+// 	}
+// 	return nil
+// }
 
 func (r *redisTokenRepository) HaveToken(ctx context.Context, userID string, tokenID string) bool {
 	key := fmt.Sprintf("%s:%s", userID, tokenID)
