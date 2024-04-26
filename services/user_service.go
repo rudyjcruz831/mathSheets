@@ -1,6 +1,7 @@
 package services
 
 import (
+	"bytes"
 	"context"
 	"log"
 
@@ -139,9 +140,15 @@ func (s *userService) GoogleSignin(ctx context.Context, code string) (*model.Use
 	return uFetched, nil
 }
 
-func (s *userService) CreatePDF(ctx context.Context, grade string, subject string) *errors.MathSheetsError {
+func (s *userService) CreatePDF(ctx context.Context, grade string, subject string) (bytes.Buffer, *errors.MathSheetsError) {
 	// here we are going to try to qurey OpenAI API
-	panic("CreatedPDF")
+	buf, mathErr := createPfd(grade, subject)
+	if mathErr != nil {
+		return bytes.Buffer{}, mathErr
+	}
+
+	return buf, nil
+
 }
 
 // func (s *userService) SetProfileImage(ctx context.Context, id string, imageFileHeader *multipart.FileHeader) (*model.Users, *errors.MathSheetsError) {

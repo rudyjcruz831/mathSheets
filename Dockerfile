@@ -23,6 +23,8 @@ RUN CGO_ENABLED=0 GOOOS=linux go build -o /app/serverexec main.go
 FROM alpine:latest
 WORKDIR /app/
 COPY --from=builder /app/serverexec .
+COPY --from=builder /mathSheets_server/main-logo-black.png ./main-logo-black.png
+
 
 # Copy RSA keys to the final container
 COPY rsa_keys_tokens /app/rsa_keys_tokens

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/base64"
 	"log"
 	"net/http"
 
@@ -14,7 +15,7 @@ type createPdfReq struct {
 	Subject string `json:"subject"`
 }
 
-func (h *Handler) CreatePdf(c *gin.Context) {
+func (h *Handler) CreatePDF(c *gin.Context) {
 	var req createPdfReq
 
 	if ok := bindData(c, &req); !ok {
@@ -24,14 +25,19 @@ func (h *Handler) CreatePdf(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	//inject req info to User service to get math sheet
-	mathSheetErr := h.UserService.CreatePDF(ctx, req.Grade, req.Subject)
+	buf, mathSheetErr := h.UserService.CreatePDF(ctx, req.Grade, req.Subject)
 	if mathSheetErr != nil {
 		log.Printf("Failed to create PDF: %v\n", mathSheetErr)
 		c.JSON(mathSheetErr.Status, mathSheetErr)
 		return
 	}
 
+	// Convert bytes to base64 string
+	base64String := base64.StdEncoding.EncodeToString(buf.Bytes())
+
+	// Set the content-type header
+	c.Header("Content-Type", "application/pdf")
 	c.JSON(http.StatusCreated, gin.H{
-		"success": "created",
+		"pdf": base64String,
 	})
 }

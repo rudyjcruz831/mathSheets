@@ -140,19 +140,3 @@ func (s *tokenService) ValidateRefreshToken(tokenString string) (*model.RefreshT
 		UID: claims.UID,
 	}, nil
 }
-
-func (s *tokenService) HaveToken(ctx context.Context, userid string, tokenid string) *errors.MathSheetsError {
-	// TODO: make sure this is correct
-	if !s.TokenRepository.HaveToken(ctx, userid, tokenid) {
-		return errors.NewAuthorization("Provided token is invalid")
-	}
-	return nil
-}
-
-// IsBlackedListed checks if token has been blacked listed
-// func (s *tokenService) IsBlackedListed(ctx context.Context, uid string, tokenid string) *errors.MathSheetsError {
-// 	if s.TokenRepository.HaveToken(ctx, uid, tokenid) {
-// 		return errors.NewAuthorization("Provided token is invalid")
-// 	}
-// 	return nil
-// }

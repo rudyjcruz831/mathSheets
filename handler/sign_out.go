@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -15,8 +17,11 @@ func (h *Handler) SignOut(c *gin.Context) {
 	// I have check this in middleware/auth_user.go
 	user := c.MustGet("user").(*model.Users)
 
+	fmt.Println("user: ", user)
+
 	ctx := c.Request.Context()
 	if mathSheetsErr := h.TokenService.Signout(ctx, user.ID); mathSheetsErr != nil {
+		log.Println(mathSheetsErr)
 		c.JSON(mathSheetsErr.Status, mathSheetsErr)
 		return
 	}

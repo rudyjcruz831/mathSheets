@@ -52,11 +52,12 @@ func NewHandler(c *Config) {
 
 	// Define routes and their corresponding handler functions.
 	g.GET("/", h.Home) // Home route
-	g.GET("/user/signout", middleware.AuthUser(h.TokenService, h.UserService), h.SignOut)
+	g.POST("/user/signout", middleware.AuthUser(h.TokenService, h.UserService), h.SignOut)
 	g.GET("/user/info", middleware.AuthUser(h.TokenService, h.UserService), h.UserInfo)
 	g.POST("/user/signup", h.Signup) // User signup route
 	g.POST("/user/signin", h.SignIn) // User signin route
 	g.POST("/user/tokens", h.Tokens)
+	g.POST("/user/worksheet", middleware.AuthUser(h.TokenService, h.UserService), h.CreatePDF)
 }
 
 func (h *Handler) Home(c *gin.Context) {
