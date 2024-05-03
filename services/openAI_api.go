@@ -12,7 +12,9 @@ func getProblemsFromOpenAI(grade string, subject string) {
 	url := "https://api.openai.com/v1/chat/completions"
 	openaiAPIKey := os.Getenv("OPEN_AI_API_KEY")
 
-	// query := fmt.Sprintf("Create 8 math problems for %s graders for the subject %s and make sure you give me 3 word problems")
+	query := fmt.Sprintf("Create 8 total problems for %s graders for the subject %s. Make sure you give me 2 word problems maximum. Also make sure the problems start with what a number and type of problem it is so can parese it easy for example (1.word problem: \"the wordproblem\"). Can you not add special characters in the response.",
+		grade,
+		subject)
 	//
 	data := map[string]interface{}{
 		"model": "gpt-3.5-turbo",
@@ -23,7 +25,7 @@ func getProblemsFromOpenAI(grade string, subject string) {
 			},
 			{
 				"role":    "user",
-				"content": "Create 6 problems for math for first graders but make sure you only do 3 word problems.",
+				"content": query,
 			},
 		},
 	}

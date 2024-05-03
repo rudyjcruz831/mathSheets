@@ -49,9 +49,10 @@ func NewHandler(c *Config) {
 	// } else {
 
 	// }
-
+	newg := c.R.Group("")
+	newg.GET("/", h.Home) // Home route
 	// Define routes and their corresponding handler functions.
-	g.GET("/", h.Home) // Home route
+	// newg.GET("/", h.Home) // Home route
 	g.POST("/user/signout", middleware.AuthUser(h.TokenService, h.UserService), h.SignOut)
 	g.GET("/user/info", middleware.AuthUser(h.TokenService, h.UserService), h.UserInfo)
 	g.POST("/user/signup", h.Signup) // User signup route
